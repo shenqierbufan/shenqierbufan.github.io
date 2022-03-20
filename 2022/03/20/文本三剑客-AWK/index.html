@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>文本三剑客-AWK-详解 - Hexo</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="shenqi"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="shenqi"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="AWK基础应用一、Awk简介awk是一门编程语言同时也是数据处理引擎  创造者：Aho、Weinberger、Kernighan 基于模式匹配检查输入文本，逐行处理并输出 通常用在Shell脚本中，获取指定的数据 单独用时，可对文本数据做统计"><meta property="og:type" content="ShenqiSec"><meta property="og:title" content="文本三剑客-AWK-详解"><meta property="og:url" content="http://example.com/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK/"><meta property="og:site_name" content="Hexo"><meta property="og:description" content="AWK基础应用一、Awk简介awk是一门编程语言同时也是数据处理引擎  创造者：Aho、Weinberger、Kernighan 基于模式匹配检查输入文本，逐行处理并输出 通常用在Shell脚本中，获取指定的数据 单独用时，可对文本数据做统计"><meta property="og:locale" content="zh_CN"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737793.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742022.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742970.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737796.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737797.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737798.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737446.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737799.gif"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742955.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742993.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737803.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742196.png"><meta property="og:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742791.png"><meta property="article:published_time" content="2022-03-20T09:41:44.000Z"><meta property="article:modified_time" content="2022-03-20T12:54:38.004Z"><meta property="article:author" content="John Doe"><meta property="article:tag" content="文本处理"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737793.gif"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"http://example.com/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK/"},"headline":"文本三剑客-AWK-详解","image":["https://gitee.com/onepz/imghub/raw/master/imgs/202203201737793.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742022.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742970.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737796.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737797.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737798.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737446.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737799.gif","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742955.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742993.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201737803.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742196.png","https://gitee.com/onepz/imghub/raw/master/imgs/202203201742791.png"],"datePublished":"2022-03-20T09:41:44.000Z","dateModified":"2022-03-20T12:54:38.004Z","author":{"@type":"Person","name":"John Doe"},"publisher":{"@type":"Organization","name":"Hexo","logo":{"@type":"ImageObject","url":"http://example.com/img/logo.svg"}},"description":"AWK基础应用一、Awk简介awk是一门编程语言同时也是数据处理引擎  创造者：Aho、Weinberger、Kernighan 基于模式匹配检查输入文本，逐行处理并输出 通常用在Shell脚本中，获取指定的数据 单独用时，可对文本数据做统计"}</script><link rel="canonical" href="http://example.com/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.2/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/css/justifiedGallery.min.css"><!--!--><!--!--><style>.pace{-webkit-pointer-events:none;pointer-events:none;-webkit-user-select:none;-moz-user-select:none;user-select:none}.pace-inactive{display:none}.pace .pace-progress{background:#3273dc;position:fixed;z-index:2000;top:0;right:100%;width:100%;height:2px}</style><script src="https://cdn.jsdelivr.net/npm/pace-js@1.2.4/pace.min.js"></script><!--!--><!--!--><!-- hexo injector head_end start --><script>
+  (function () {
+      function switchTab() {
+          if (!location.hash) {
+            return;
+          }
+          Array
+              .from(document.querySelectorAll('.tab-content'))
+              .forEach($tab => {
+                  $tab.classList.add('is-hidden');
+              });
+          Array
+              .from(document.querySelectorAll('.tabs li'))
+              .forEach($tab => {
+                  $tab.classList.remove('is-active');
+              });
+          const $activeTab = document.querySelector(location.hash);
+          if ($activeTab) {
+              $activeTab.classList.remove('is-hidden');
+          }
+          const $tabMenu = document.querySelector(`a[href="${location.hash}"]`);
+          if ($tabMenu) {
+              $tabMenu.parentElement.classList.add('is-active');
+          }
+      }
+      switchTab();
+      window.addEventListener('hashchange', switchTab, false);
+  })();
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.0.0"></head><body class="is-3-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">家目录</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item is-hidden-tablet catalogue" title="目录" href="javascript:;"><i class="fas fa-list-ul"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-6-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-03-20T09:41:44.000Z" title="2022-3-20 17:41:44">2022-03-20</time>发表</span><span class="level-item"><time dateTime="2022-03-20T12:54:38.004Z" title="2022-3-20 20:54:38">2022-03-20</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/%E8%BF%90%E7%BB%B4/">运维</a></span><span class="level-item">17 分钟读完 (大约2570个字)</span></div></div><h1 class="title is-3 is-size-4-mobile">文本三剑客-AWK-详解</h1><div class="content"><h1 id="AWK基础应用"><a href="#AWK基础应用" class="headerlink" title="AWK基础应用"></a>AWK基础应用</h1><h2 id="一、Awk简介"><a href="#一、Awk简介" class="headerlink" title="一、Awk简介"></a>一、Awk简介</h2><p><strong>awk是一门编程语言同时也是数据处理引擎</strong></p>
+<ul>
+<li>创造者：<strong>A</strong>ho、<strong>W</strong>einberger、<strong>K</strong>ernighan</li>
+<li>基于模式匹配检查输入文本，逐行处理并输出</li>
+<li>通常用在Shell脚本中，获取指定的数据</li>
+<li>单独用时，可对文本数据做统计</li>
+</ul>
+<span id="more"></span>
+
+<h2 id="二、命令格式解析"><a href="#二、命令格式解析" class="headerlink" title="二、命令格式解析"></a>二、命令格式解析</h2><h3 id="格式1"><a href="#格式1" class="headerlink" title="格式1"></a>格式1</h3><p><strong>1、awk [选项] ‘[条件]{编辑指令} ‘ 文件…</strong></p>
+<p><strong>2、举例说明</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span>  <span class="string">&#x27;&#123;print $1,$3&#125;&#x27;</span> /etc/passwd |<span class="built_in">head</span> -3</span><br><span class="line"></span><br><span class="line">root 0</span><br><span class="line">daemon 1</span><br><span class="line">bin 2</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="格式2"><a href="#格式2" class="headerlink" title="格式2"></a>格式2</h3><p><strong>1、前置命令 | awk [选项] ‘[条件]{编辑指令}’</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/passwd | awk <span class="string">&#x27;pattern&#123;commands&#125;&#x27;</span><span class="string">&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2、举例说明</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> /etc/shadow | awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;&#123;print $1,$2&#125;&#x27;</span> |<span class="built_in">head</span> -3</span><br><span class="line">root !</span><br><span class="line">daemon *</span><br><span class="line">bin *</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="五、Awk常用选项"><a href="#五、Awk常用选项" class="headerlink" title="五、Awk常用选项"></a>五、Awk常用选项</h2><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>-f</td>
+<td>指定一个awk脚本</td>
+</tr>
+<tr>
+<td>-F</td>
+<td>指定分隔符</td>
+</tr>
+<tr>
+<td>-v</td>
+<td>传递变量</td>
+</tr>
+<tr>
+<td>-V</td>
+<td>查看版本信息</td>
+</tr>
+</tbody></table>
+<h2 id="三、AWK变量"><a href="#三、AWK变量" class="headerlink" title="三、AWK变量"></a>三、AWK变量</h2><h3 id="内置变量"><a href="#内置变量" class="headerlink" title="内置变量"></a>内置变量</h3><table>
+<thead>
+<tr>
+<th>变量</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>$0</td>
+<td>整行内容</td>
+</tr>
+<tr>
+<td>$1-$n</td>
+<td>当前行的第1-n个字段</td>
+</tr>
+<tr>
+<td>NF (Number Field)</td>
+<td>当前行的字段个数,也就是有多少列</td>
+</tr>
+<tr>
+<td>NR (Number Row)</td>
+<td>当前行的行号,从1开始</td>
+</tr>
+<tr>
+<td>FNR</td>
+<td>当文件处理时,每个文件行号单独计数</td>
+</tr>
+<tr>
+<td>FS (File Separator)</td>
+<td>输出字段分隔符。不指定默认以空格或者tab分割</td>
+</tr>
+<tr>
+<td>RS (Row Separator)</td>
+<td>输入行分隔符。默认回车</td>
+</tr>
+<tr>
+<td>OFS</td>
+<td>输出字段分隔符。默认空格</td>
+</tr>
+<tr>
+<td>ORS</td>
+<td>输出行分隔符。默认为回车</td>
+</tr>
+<tr>
+<td>FILENAME</td>
+<td>当前输入的文件名字</td>
+</tr>
+<tr>
+<td>ARGC</td>
+<td>当前命令行参数个数</td>
+</tr>
+<tr>
+<td>ARGV</td>
+<td>当前命令行参数数组</td>
+</tr>
+</tbody></table>
+<h4 id="RS、FS、ORS-、OFS"><a href="#RS、FS、ORS-、OFS" class="headerlink" title="RS、FS、ORS 、OFS"></a>RS、FS、ORS 、OFS</h4><p><strong>1.phone文件里面</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> phone</span><br><span class="line"></span><br><span class="line">匪警|110-火警|119-急救中心|120-交通故障|122-天气预报|12121</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.指定输入行的分隔符</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> phone |awk <span class="string">&#x27;BEGIN&#123;RS=&quot;-&quot;;FS=&quot;|&quot;&#125;&#123;print $1&quot;_&quot;$2&#125;END&#123;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">匪警_110</span><br><span class="line">火警_119</span><br><span class="line">急救中心_120</span><br><span class="line">交通故障_122</span><br><span class="line">天气预报_12121</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.指定输出行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> phone |awk <span class="string">&#x27;BEGIN&#123;RS=&quot;-&quot;;FS=&quot;|&quot;;ORS=&quot;&amp;&quot;&#125;&#123;print $1&quot;_&quot;$2&#125;END&#123;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">匪警_110&amp;火警_119&amp;急救中心_120&amp;交通故障_122&amp;天气预报_12121</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>4.字段间的分隔符，print之间用逗号隔开</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cat</span> phone |awk <span class="string">&#x27;BEGIN&#123;RS=&quot;-&quot;;FS=&quot;|&quot;;ORS=&quot;&amp;&quot;;OFS=&quot;_&quot;&#125;&#123;print $1,$2&#125;END&#123;&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">匪警_110&amp;火警_119&amp;急救中心_120&amp;交通故障_122&amp;天气预报_12121</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="ARGC"><a href="#ARGC" class="headerlink" title="ARGC"></a>ARGC</h4><p><strong>1.这里输出结果是3，awk本身算一个，文件名各算一个</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print ARGC&#125;&#x27;</span><span class="string">&#x27; /etc/passwd /etc/shadow</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">3</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="NR、FNR、FILENAME、NF"><a href="#NR、FNR、FILENAME、NF" class="headerlink" title="NR、FNR、FILENAME、NF"></a>NR、FNR、FILENAME、NF</h4><p><strong>1.统计&#x2F;etc&#x2F;shadow有多少行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print FNR&#125;&#x27;</span> /etc/passwd</span><br><span class="line"></span><br><span class="line">41</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>2.统计&#x2F;etc&#x2F;passwd &#x2F;etc&#x2F;group两个连续文件的里面的行数</strong></p>
+<ul>
+<li><p><strong>如果使用FNR发现统计的是各自文件的行数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print FNR&#125;&#x27;</span> /etc/passwd /etc/group</span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p><strong>使用NR就可以将多个文件行数累计起来</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;&#123;print NR&#125;&#x27;</span> /etc/passwd /etc/group</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>3.把一个文件按–&gt;行号：文件名–&gt;此行内容 这种格式输出</strong></p>
+<p><img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737793.gif" alt="img"></p>
+<p><strong>4.统计每行有多少个字段</strong></p>
+<p><img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742022.png" alt="img"></p>
+<h3 id="自定义变量"><a href="#自定义变量" class="headerlink" title="自定义变量"></a>自定义变量</h3><h4 id="引入"><a href="#引入" class="headerlink" title="引入"></a>引入</h4><ol>
+<li></li>
+</ol>
+<ul>
+<li><p>刚刚学的我们知道，awk调用内置变量时，不需要在前面加<code>$</code>符号。</p>
+</li>
+<li><p>那怎么调用系统shell的变量呢?</p>
+</li>
+<li><p>我现在来试试，变量前面不加$，结果是输出为空行</p>
+</li>
+</ul>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742970.png" alt="img" style="zoom:80%;" />
+
+
+
+
+
+<ol start="2">
+<li></li>
+</ol>
+<ul>
+<li>一个<code>$</code>是输出当前行的所有内容，那这里是在<code>title</code>前添加<code>$</code>会输出怎样的结果呢？</li>
+</ul>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737796.gif" style="zoom:80%;" />
+
+
+
+<ul>
+<li><strong>加了其它的任意字符也是可以的，说明<code>$</code>后跟任意非具有特定意义的字符会当<code>$0</code>使用</strong></li>
+</ul>
+<p><img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737797.gif"></p>
+<p><strong>3.回到刚才的问题，那如何引用外部的shell变量呢?</strong></p>
+<h4 id="方式一"><a href="#方式一" class="headerlink" title="方式一"></a>方式一</h4><p><strong>1.可以使用<code>-v</code>参数 格式：<code>变量名=$shell</code>的变量名 多个用变量<code>,</code>隔开</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737798.gif" style="zoom: 67%;" />
+
+
+
+
+
+ 
+
+<h4 id="方式二"><a href="#方式二" class="headerlink" title="方式二"></a>方式二</h4><p><strong>1.先设置成全局变量，然后用awk的ENVIRON数组引用它</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737446.gif" style="zoom:80%;" />
+
+
+
+<h4 id="举例"><a href="#举例" class="headerlink" title="举例"></a>举例</h4><p><strong>1.输出当前登录用户在password中的记录，print后面可以什么都不加,默认就是$0</strong></p>
+<p><img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737799.gif" alt="img"></p>
+<p><strong>2.输出用户yoyo在&#x2F;etc&#x2F;shadow中的密码记录</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742955.png" alt="" style="zoom:80%;" />
+
+
+
+<h2 id="四、AWK处理动作"><a href="#四、AWK处理动作" class="headerlink" title="四、AWK处理动作"></a>四、AWK处理动作</h2><h3 id="动作类型"><a href="#动作类型" class="headerlink" title="动作类型"></a>动作类型</h3><p><strong>行前处理：BEGIN{}</strong>  </p>
+<ul>
+<li>读入第行文本之前执行</li>
+<li>一般用来初始化操作</li>
+</ul>
+<p><strong>逐行处理：{}</strong></p>
+<ul>
+<li>逐行读入文本执行相应的处理</li>
+<li>是最常见的编辑指令块</li>
+</ul>
+<p><strong>在所有行后处理：END{}</strong></p>
+<ul>
+<li><strong>处理完最后一行文件之后执行</strong></li>
+<li><strong>一般用来输出处理结果</strong></li>
+</ul>
+<h3 id="类型小结"><a href="#类型小结" class="headerlink" title="类型小结"></a>类型小结</h3><table>
+<thead>
+<tr>
+<th>动作</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BEGIN{}</td>
+<td>行前处理</td>
+</tr>
+<tr>
+<td>{}</td>
+<td>逐行处理</td>
+</tr>
+<tr>
+<td>END{}</td>
+<td>行后处理</td>
+</tr>
+</tbody></table>
+<p><strong>这3个动作，它们可以单独使用也可以同时一起使用</strong></p>
+<h3 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h3><p><strong>1.预处理不需要数据文件</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;a=99;print a+1&#125;&#x27;</span></span><br><span class="line"></span><br><span class="line">100</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.统计使用bash的用户个数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;x=0&#125;/bash$/&#123;x++&#125;END&#123;print x&#125;&#x27;</span> /etc/passwd</span><br><span class="line"></span><br><span class="line">3</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.预处理时，行数为0，全部处理完以后，行数为已读入文本的行数</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;print NR&#125;END&#123;print NR&#125;&#x27;</span> /etc/passwd</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">41</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="六、格式化输出"><a href="#六、格式化输出" class="headerlink" title="六、格式化输出"></a>六、格式化输出</h2><h3 id="格式说明"><a href="#格式说明" class="headerlink" title="格式说明"></a>格式说明</h3><table>
+<thead>
+<tr>
+<th>%s</th>
+<th>打印字符串</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>%d</td>
+<td>打印十进制数</td>
+</tr>
+<tr>
+<td>%f</td>
+<td>打印浮点数</td>
+</tr>
+<tr>
+<td>%x</td>
+<td>打印十六进制数</td>
+</tr>
+<tr>
+<td>%o</td>
+<td>打印八进制数</td>
+</tr>
+<tr>
+<td>%e</td>
+<td>打印数字的科学计数法形式</td>
+</tr>
+<tr>
+<td>%c</td>
+<td>打印单个字符的ASCII码</td>
+</tr>
+</tbody></table>
+<h3 id="修饰字符"><a href="#修饰字符" class="headerlink" title="修饰字符"></a>修饰字符</h3><table>
+<thead>
+<tr>
+<th>-</th>
+<th>左对齐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>右对齐</td>
+</tr>
+<tr>
+<td>#</td>
+<td>在8进制前面显示0，16进制前面显示0x</td>
+</tr>
+</tbody></table>
+<h3 id="举例使用"><a href="#举例使用" class="headerlink" title="举例使用"></a>举例使用</h3><p>输出&#x2F;etc&#x2F;passwd下用户名与十六进制的UID</p>
+<p>格式：<code>printf “%d,%\#x…”,参数1.参数n..</code></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F: <span class="string">&#x27;&#123;printf &quot;%-20s %-#x\n&quot;,$1,$3 &#125;&#x27;</span> /etc/passwd|<span class="built_in">head</span> -3</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>输出结果：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">root                 0</span><br><span class="line">daemon               0x1</span><br><span class="line">bin                  0x2</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="七、AWK处理条件"><a href="#七、AWK处理条件" class="headerlink" title="七、AWK处理条件"></a>七、AWK处理条件</h2><h3 id="处理条件概述"><a href="#处理条件概述" class="headerlink" title="处理条件概述"></a>处理条件概述</h3><p>所有的行全部处理并输出吗？</p>
+<p>怎么限制处理的条件？</p>
+<p>根据多个条件来处理指定的行？</p>
+<h3 id="条件表现形式"><a href="#条件表现形式" class="headerlink" title="条件表现形式"></a>条件表现形式</h3><p>格式回顾</p>
+<ul>
+<li>awk [选项] ‘[条件]{编辑指令}’ 文件…</li>
+</ul>
+<p>条件的表现形式？</p>
+<ul>
+<li>正则表达式</li>
+<li>数值&#x2F;字符串比较</li>
+<li>逻辑比较</li>
+<li>运算符</li>
+</ul>
+<h3 id="正则表达式"><a href="#正则表达式" class="headerlink" title="正则表达式"></a>正则表达式</h3><p><strong>语法：</strong></p>
+<ul>
+<li>&#x2F;正则表达式&#x2F;</li>
+<li>~ 匹配、! ~不匹配</li>
+</ul>
+<p><strong>1.匹配&#x2F;etc&#x2F;passwd文件行中含有以ro开头的用户记录</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;/^ro/&#123;print&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.列出第7个字段不以bash结尾的用户名、登录shell</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$7!~/bash$/&#123;printf &quot;%-20s %s\n&quot;,$1,$7&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h3 id="运算符匹配"><a href="#运算符匹配" class="headerlink" title="运算符匹配"></a>运算符匹配</h3><h4 id="关系运算符"><a href="#关系运算符" class="headerlink" title="关系运算符"></a>关系运算符</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&lt;</td>
+<td>小于</td>
+</tr>
+<tr>
+<td>&gt;</td>
+<td>大于</td>
+</tr>
+<tr>
+<td>&lt;&#x3D;</td>
+<td>小于等于</td>
+</tr>
+<tr>
+<td>&gt;&#x3D;</td>
+<td>大于等于</td>
+</tr>
+<tr>
+<td>&#x3D;&#x3D;</td>
+<td>等于</td>
+</tr>
+<tr>
+<td>!&#x3D;</td>
+<td>不等于</td>
+</tr>
+<tr>
+<td>~</td>
+<td>匹配正则表达式</td>
+</tr>
+<tr>
+<td>!~</td>
+<td>不匹配正则表达式</td>
+</tr>
+</tbody></table>
+<p><strong>1.输出第2行用户记录</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;NR==2&#123;print&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.输出第2列不是x的用户记录，可以用它来判断空密码</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$2!=&quot;x&quot;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="逻辑运算符"><a href="#逻辑运算符" class="headerlink" title="逻辑运算符"></a>逻辑运算符</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&amp;&amp;</td>
+<td>与</td>
+</tr>
+<tr>
+<td>||</td>
+<td>或</td>
+</tr>
+<tr>
+<td>!</td>
+<td>非</td>
+</tr>
+</tbody></table>
+<p><strong>1.输出系统中uid小于100的用户</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$3&lt;100&#123;printf &quot;%-10s%s\n&quot;,$1,$3&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.输出系统中长度大于3位小于5位的用户名，并且uid是2位数的</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$1~/^[a-zA-Z]&#123;3,5&#125;$/ &amp;&amp; $3&lt;100 &#123;print&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.输出系统中uid大于等于50并且此用户可以登录系统</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$3&gt;=50 &amp;&amp; !/nologin$/&#123;printf &quot;%-10s %s\n&quot;,$1,$3&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="变量的运算"><a href="#变量的运算" class="headerlink" title="变量的运算"></a>变量的运算</h3><h4 id="运算符号"><a href="#运算符号" class="headerlink" title="运算符号"></a>运算符号</h4><table>
+<thead>
+<tr>
+<th>符号</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>加</td>
+</tr>
+<tr>
+<td>-</td>
+<td>减</td>
+</tr>
+<tr>
+<td>*</td>
+<td>乘</td>
+</tr>
+<tr>
+<td>&#x2F;</td>
+<td>除</td>
+</tr>
+<tr>
+<td>%</td>
+<td>取余</td>
+</tr>
+<tr>
+<td>^或**</td>
+<td>乘方</td>
+</tr>
+<tr>
+<td>++x</td>
+<td>先自增1</td>
+</tr>
+<tr>
+<td>x++</td>
+<td>后自增1</td>
+</tr>
+</tbody></table>
+<h4 id="举例练习"><a href="#举例练习" class="headerlink" title="举例练习"></a>举例练习</h4><p><strong>1.计算&#x2F;var&#x2F;log&#x2F;message中的空白行的数量</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;x=0&#125;/^$/&#123;x++&#125;END&#123;printf &quot;空白行数量:%d\n&quot;,x&#125;&#x27;</span> /var/log/messages</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>2.算出它们的平均分,并且从小到大进行排序</strong></p>
+<p><strong>1)、grade.txt文件内容</strong></p>
+<table>
+<thead>
+<tr>
+<th>喜羊羊</th>
+<th>80</th>
+<th>90</th>
+<th>100</th>
+<th>96</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>路飞</td>
+<td>11</td>
+<td>12</td>
+<td>13</td>
+<td>14</td>
+</tr>
+<tr>
+<td>鸣人</td>
+<td>30</td>
+<td>60</td>
+<td>90</td>
+<td>66</td>
+</tr>
+<tr>
+<td>沧桑</td>
+<td>99</td>
+<td>66</td>
+<td>33</td>
+<td>100</td>
+</tr>
+<tr>
+<td>小朋友</td>
+<td>6</td>
+<td>5</td>
+<td>4</td>
+<td>3</td>
+</tr>
+<tr>
+<td>暖羊羊</td>
+<td>50</td>
+<td>30</td>
+<td>60</td>
+<td>70</td>
+</tr>
+<tr>
+<td>灰太狼</td>
+<td>100</td>
+<td>99</td>
+<td>98</td>
+<td>100</td>
+</tr>
+</tbody></table>
+<p><strong>2)、编写awk命令</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">FS=&quot; &quot;;print &quot;姓名\t计算机\t物理\t天文\t地理\t平均分&quot;</span></span><br><span class="line"><span class="string">&#125;&#123;</span></span><br><span class="line"><span class="string">avg=($2+$3+$4)/4;</span></span><br><span class="line"><span class="string">printf &quot;%-3s\t %s \t%s \t%s \t%s \t%.2f\n&quot;,$1,$2,$3,$4,$5,avg</span></span><br><span class="line"><span class="string">&#125;&#x27;</span> grade.txt  | <span class="built_in">sort</span> -k6 -n</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3)、运行结果</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742993.png" alt="" style="zoom:80%;" />
+
+
+
+<p><strong>4）、算出它们所有学科的总成绩</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">	FS=&quot; &quot;;</span></span><br><span class="line"><span class="string">	print &quot;姓名\t天文\t地理\t军事\t物理\t总分&quot;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#123;</span></span><br><span class="line"><span class="string">	sum=$2+$3+$4+$5</span></span><br><span class="line"><span class="string">	s_Sum+=sum</span></span><br><span class="line"><span class="string">	s_Astronomy+=$2</span></span><br><span class="line"><span class="string">	s_Geography+=$3</span></span><br><span class="line"><span class="string">	s_Military+=$4</span></span><br><span class="line"><span class="string">	s_Physical+=$5</span></span><br><span class="line"><span class="string">	printf &quot;%s\t %s\t %s\t %s\t %s\t %s\t\n&quot;,$1,$2,$3,$4,$5,sum</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">END&#123;</span></span><br><span class="line"><span class="string">	print &quot;---------------------------------------------&quot;</span></span><br><span class="line"><span class="string">	printf &quot;总和\t %d\t %d\t %d\t %d\t %d\t\n&quot;,s_Astronomy,s_Geography,s_Military,s_Physical,s_Sum</span></span><br><span class="line"><span class="string">&#125;&#x27;</span> grade.txt  | <span class="built_in">sort</span> -k6 -n</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>5)、运行结果</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201737803.png" alt="" style="zoom:80%;" />
+
+
+
+
+
+<h1 id="AWK高级应用"><a href="#AWK高级应用" class="headerlink" title="AWK高级应用"></a>AWK高级应用</h1><h2 id="一、流程控制"><a href="#一、流程控制" class="headerlink" title="一、流程控制"></a>一、流程控制</h2><h3 id="条件语句"><a href="#条件语句" class="headerlink" title="条件语句"></a>条件语句</h3><h4 id="语法格式"><a href="#语法格式" class="headerlink" title="语法格式"></a>语法格式</h4><p><strong>单分支</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(条件)&#123;</span><br><span class="line">	动作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>双分支</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(条件)&#123;</span><br><span class="line">	动作1</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">	动作2</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>多分支</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(条件表达式)&#123;</span><br><span class="line">	动作1</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(条件表达式)&#123;</span><br><span class="line">	动作2</span><br><span class="line">&#125;</span><br><span class="line">...</span><br><span class="line"><span class="keyword">else</span>&#123;</span><br><span class="line">	动作N</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="举例应用"><a href="#举例应用" class="headerlink" title="举例应用"></a>举例应用</h4><p><strong>1.找出系统用户中uid 50 &gt; uid &gt; 100并且用户名的长度小于等于5</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;$1~/^.&#123;1,5&#125;$/&#123;if ($3 &gt;50 &amp;&amp; $3 &lt;100)print &#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<h3 id="循环语句"><a href="#循环语句" class="headerlink" title="循环语句"></a>循环语句</h3><h4 id="while-循环"><a href="#while-循环" class="headerlink" title="while 循环"></a>while 循环</h4><p><strong>语法格式：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span>(条件表达式)</span><br><span class="line">&#123;</span><br><span class="line">	动作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>举例应用：</strong></p>
+<p><strong>1.从1累加到100</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BEGIN&#123;</span><br><span class="line">    i=1;<span class="built_in">sum</span>=0;</span><br><span class="line">    <span class="keyword">while</span>(i&lt;=100)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">sum</span>+=i;</span><br><span class="line">        i++;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">print</span> <span class="built_in">sum</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.统计&#x2F;etc&#x2F;passwd文件内<code>root</code>出现的次数</strong></p>
+<ul>
+<li>利用<code>-F [:/]</code>，表示分隔符为<code>:</code>或者<code>/</code></li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F <span class="string">&quot;[:/]&quot;</span> <span class="string">&#x27;&#123;i=1&#125;&#123; while(i&lt;NF)&#123; if($i~/root/)&#123;j++&#125;;i++ &#125; &#125;END&#123;print j&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>3.此操作等效上述操作</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">str=$(<span class="built_in">cat</span> /etc/passwd)</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$str</span> | awk -F <span class="string">&quot;root&quot;</span> <span class="string">&#x27;&#123;print NF-1&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="do-while循环"><a href="#do-while循环" class="headerlink" title="do while循环"></a>do while循环</h4><p><strong>语法格式：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span>&#123;</span><br><span class="line">	动作</span><br><span class="line">&#125; <span class="keyword">while</span>(条件表达式)</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>举例应用：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">    i=1;</span></span><br><span class="line"><span class="string">    sum=0;</span></span><br><span class="line"><span class="string">    do</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">        sum+=i;</span></span><br><span class="line"><span class="string">        i++;</span></span><br><span class="line"><span class="string">    &#125; while(i&lt;=100);    </span></span><br><span class="line"><span class="string">	print sum</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="for循环"><a href="#for循环" class="headerlink" title="for循环"></a>for循环</h4><p><strong>语法格式：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(初始化计数器;计数器测试;计数器变更)</span><br><span class="line">&#123;</span><br><span class="line">	动作</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>举例应用：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">    sum=0;</span></span><br><span class="line"><span class="string">    for(i=1;i&lt;=100;i++)</span></span><br><span class="line"><span class="string">    &#123;   </span></span><br><span class="line"><span class="string">        sum+=i;</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">    print sum</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h4 id="其他控制语句"><a href="#其他控制语句" class="headerlink" title="其他控制语句"></a>其他控制语句</h4><p><strong>常用的中断、退出等awk指令</strong></p>
+<table>
+<thead>
+<tr>
+<th>关键字</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>break</td>
+<td>结束当前的循环体</td>
+</tr>
+<tr>
+<td>continue</td>
+<td>中止本次循环，转入下一次循环</td>
+</tr>
+<tr>
+<td>next</td>
+<td>跳过当前行，读入下一行文本开始处理</td>
+</tr>
+<tr>
+<td>exit</td>
+<td>结束文本读入，转入END{}执行<br>如果没有END{}则直接退出awk处理操作</td>
+</tr>
+</tbody></table>
+<p><strong>1.输出奇数行的用户记录</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;NR%2==0&#123;next&#125;&#123;printf &quot;%-10d %s\n&quot;,NR,$1&#125;&#x27;</span> /etc/passwd</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.从1~100偶数相加的和</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;sum=0;for(i=1;i&lt;=100;i++)&#123; if (i%2==0)continue; sum+=i;&#125; print sum&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="二、Awk数组"><a href="#二、Awk数组" class="headerlink" title="二、Awk数组"></a>二、Awk数组</h2><h3 id="定义数组"><a href="#定义数组" class="headerlink" title="定义数组"></a>定义数组</h3><ul>
+<li><strong>格式：数组名[下标] &#x3D; 元素值</strong></li>
+</ul>
+<p><strong>1.定义索引数组</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">    array[0]=&quot;haha&quot;;</span></span><br><span class="line"><span class="string">    array[1]=&quot;lala&quot;;</span></span><br><span class="line"><span class="string">	array[2]=&quot;yaya&quot;;</span></span><br><span class="line"><span class="string">	# 遍历数组</span></span><br><span class="line"><span class="string">    for(key in array)</span></span><br><span class="line"><span class="string">    &#123;</span></span><br><span class="line"><span class="string">        print key,array[key]</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>2.定义关联数组</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;BEGIN&#123;</span></span><br><span class="line"><span class="string">    array[&quot;blue&quot;]=&quot;sky&quot;;</span></span><br><span class="line"><span class="string">    array[&quot;red&quot;]=&quot;hat&quot;;</span></span><br><span class="line"><span class="string">	array[&quot;green&quot;]=&quot;grass&quot;;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">	#遍历数组</span></span><br><span class="line"><span class="string">    for(key in array)</span></span><br><span class="line"><span class="string">    &#123;   </span></span><br><span class="line"><span class="string">        print key,array[key]</span></span><br><span class="line"><span class="string">    &#125;</span></span><br><span class="line"><span class="string">&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="使用数组"><a href="#使用数组" class="headerlink" title="使用数组"></a>使用数组</h3><ul>
+<li><strong>格式：数组名[下标]</strong></li>
+</ul>
+<h3 id="遍历数组"><a href="#遍历数组" class="headerlink" title="遍历数组"></a>遍历数组</h3><ul>
+<li><strong>用法：for(变量 in 数组名){print 数组名[变量]}</strong></li>
+</ul>
+<h3 id="举例使用-1"><a href="#举例使用-1" class="headerlink" title="举例使用"></a>举例使用</h3><p><strong>1.去除文件中重复的行</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">awk <span class="string">&#x27;!a[$0]++&#x27;</span> /etc/profile</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>a[$0]++ 第1次就是0，0是假，取反后就是真，默认就会输出</p>
+<p>第2次的时候已经变成1了，1取反就成了假，所以就不会再输出</p>
+</blockquote>
+<p><strong>2.列出&#x2F;etc&#x2F;passwd中的登录shell种类</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">awk -F<span class="string">&quot;:&quot;</span> <span class="string">&#x27;!a[$7]++&#123;print $7&#125;&#x27;</span> /etc/passwd</span><br><span class="line"></span><br><span class="line">/bin/bash</span><br><span class="line">/sbin/nologin</span><br><span class="line">/bin/sync</span><br><span class="line">/sbin/shutdown</span><br><span class="line">/sbin/halt</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="综合案例"><a href="#综合案例" class="headerlink" title="综合案例"></a>综合案例</h3><p><strong>1.自动生成日志脚本</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line">INDEX=1</span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;按CTRL+C停止生成&quot;</span></span><br><span class="line"><span class="keyword">while</span> :</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="keyword">for</span> user <span class="keyword">in</span> <span class="string">&quot;喜羊羊&quot;</span> <span class="string">&quot;懒羊羊&quot;</span> <span class="string">&quot;沸羊羊&quot;</span> <span class="string">&quot;慢羊羊&quot;</span> <span class="string">&quot;灰太狼&quot;</span> <span class="string">&quot;武大郎&quot;</span></span><br><span class="line">	<span class="keyword">do</span></span><br><span class="line">		COUNT=<span class="variable">$RANDOM</span></span><br><span class="line">		IN_NUM=$[RANDOM%999]</span><br><span class="line">		FAIL_NUM=$[COUNT-IN_NUM]</span><br><span class="line">		</span><br><span class="line">		<span class="built_in">echo</span> <span class="string">&quot;`date &#x27;+%Y-%m-%d %H:%M:%S&#x27;` <span class="variable">$INDEX</span> 处理人:<span class="variable">$user</span> insert <span class="variable">$COUNT</span> records into database:product table:detail, insert <span class="variable">$IN_NUM</span> records successfully,failed <span class="variable">$FAIL_NUM</span> records&quot;</span> &gt;&gt; ./db.log.`<span class="built_in">date</span> +%Y%m%d`</span><br><span class="line">		<span class="built_in">let</span> INDEX++</span><br><span class="line">	<span class="keyword">done</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p><strong>2.生成结果示例</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742196.png" alt="" style="zoom:80%;" />
+
+
+
+
+
+<p><strong>3.编写一个<code>log.awk</code>脚本统计出每个用户查询的记录数，成功与失败的数量</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">BEGIN&#123;</span><br><span class="line"><span class="built_in">print</span> <span class="string">&quot;用户\t记录数\t成功\t失败\t&quot;</span></span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="built_in">split</span>(<span class="variable">$4</span>,arr,<span class="string">&quot;:&quot;</span>);</span><br><span class="line">	user=arr[2];</span><br><span class="line">	total=<span class="variable">$6</span>;</span><br><span class="line">	ok=<span class="variable">$12</span>;</span><br><span class="line">	no=<span class="variable">$15</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="built_in">users</span>[user][<span class="string">&quot;total&quot;</span>]+=total;</span><br><span class="line">	<span class="built_in">users</span>[user][<span class="string">&quot;ok&quot;</span>]+=ok;</span><br><span class="line">	<span class="built_in">users</span>[user][<span class="string">&quot;no&quot;</span>]+=no;</span><br><span class="line">&#125;</span><br><span class="line">END&#123;</span><br><span class="line">	<span class="keyword">for</span>(u <span class="keyword">in</span> <span class="built_in">users</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">printf</span> <span class="string">&quot;%s\t%d\t%d\t%d\n&quot;</span>,u,<span class="built_in">users</span>[u][<span class="string">&quot;total&quot;</span>],<span class="built_in">users</span>[u][<span class="string">&quot;ok&quot;</span>],<span class="built_in">users</span>[u][<span class="string">&quot;no&quot;</span>]</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>4.运行结果</strong></p>
+<img src="https://gitee.com/onepz/imghub/raw/master/imgs/202203201742791.png" alt="" style="zoom:80%;" />
+</div><div class="article-licensing box"><div class="licensing-title"><p>文本三剑客-AWK-详解</p><p><a href="http://example.com/2022/03/20/文本三剑客-AWK/">http://example.com/2022/03/20/文本三剑客-AWK/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>作者</h6><p>John Doe</p></div></div><div class="level-item is-narrow"><div><h6>发布于</h6><p>2022-03-20</p></div></div><div class="level-item is-narrow"><div><h6>更新于</h6><p>2022-03-20</p></div></div><div class="level-item is-narrow"><div><h6>许可协议</h6><p><a class="icons" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="icon fab fa-creative-commons"></i></a><a class="icons" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="icon fab fa-creative-commons-by"></i></a><a class="icons" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="icon fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="article-tags is-size-7 mb-4"><span class="mr-2">#</span><a class="link-muted mr-2" rel="tag" href="/tags/%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/">文本处理</a></div><!--!--></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">喜欢这篇文章？打赏一下作者吧</h3><div class="buttons is-centered"><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>支付宝</span><span class="qrcode"><img src="/img/alipay.jpg" alt="支付宝"></span></a><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>微信</span><span class="qrcode"><img src="/img/wepay.jpg" alt="微信"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-start"><a class="article-nav-prev level level-item link-muted" href="/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK-%E7%BB%83%E4%B9%A0/"><i class="level-item fas fa-chevron-left"></i><span class="level-item">文本三剑客-AWK-练习</span></a></div><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2022/03/10/%E5%93%B2%E5%AD%A6/"><span class="level-item">哲学</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><!--!--></div><div class="column column-left is-4-tablet is-4-desktop is-3-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="shenqi"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">shenqi</p><p class="is-size-6 is-block">shenqige666</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>ctf.oneps.cn</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">文章</p><a href="/archives"><p class="title">3</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">分类</p><a href="/categories"><p class="title">2</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">标签</p><a href="/tags"><p class="title">2</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/shenqierbufan" target="_blank" rel="noopener">关注我</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/shenqierbufan"><i class="fab fa-github"></i></a></div></div></div><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">链接</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://susec.me/" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Suanve</span></span><span class="level-right"><span class="level-item tag">susec.me</span></span></a></li><li><a class="level is-mobile" href="https://hackerpoet.com/" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">T4rn</span></span><span class="level-right"><span class="level-item tag">hackerpoet.com</span></span></a></li></ul></div></div></div><div class="card widget" data-type="categories"><div class="card-content"><div class="menu"><h3 class="menu-label">分类</h3><ul class="menu-list"><li><a class="level is-mobile" href="/categories/%E5%93%B2%E5%AD%A6/"><span class="level-start"><span class="level-item">哲学</span></span><span class="level-end"><span class="level-item tag">1</span></span></a></li><li><a class="level is-mobile" href="/categories/%E8%BF%90%E7%BB%B4/"><span class="level-start"><span class="level-item">运维</span></span><span class="level-end"><span class="level-item tag">2</span></span></a></li></ul></div></div></div><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">最新文章</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-03-20T12:49:26.000Z">2022-03-20</time></p><p class="title"><a href="/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK-%E7%BB%83%E4%B9%A0/">文本三剑客-AWK-练习</a></p><p class="categories"><a href="/categories/%E8%BF%90%E7%BB%B4/">运维</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-03-20T09:41:44.000Z">2022-03-20</time></p><p class="title"><a href="/2022/03/20/%E6%96%87%E6%9C%AC%E4%B8%89%E5%89%91%E5%AE%A2-AWK/">文本三剑客-AWK-详解</a></p><p class="categories"><a href="/categories/%E8%BF%90%E7%BB%B4/">运维</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2022-03-10T14:20:49.000Z">2022-03-10</time></p><p class="title"><a href="/2022/03/10/%E5%93%B2%E5%AD%A6/">哲学</a></p><p class="categories"><a href="/categories/%E5%93%B2%E5%AD%A6/">哲学</a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">归档</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2022/03/"><span class="level-start"><span class="level-item">三月 2022</span></span><span class="level-end"><span class="level-item tag">3</span></span></a></li></ul></div></div></div><div class="card widget" data-type="tags"><div class="card-content"><div class="menu"><h3 class="menu-label">标签</h3><div class="field is-grouped is-grouped-multiline"><div class="control"><a class="tags has-addons" href="/tags/%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/"><span class="tag">文本处理</span><span class="tag">2</span></a></div><div class="control"><a class="tags has-addons" href="/tags/%E8%B6%85%E5%85%BD%E6%AD%A6%E8%A3%85/"><span class="tag">超兽武装</span><span class="tag">1</span></a></div></div></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">订阅更新</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">follow.it</h3><form action="" method="post" target="_blank"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="订阅"></div></div></form></div></div></div><div class="column-right-shadow is-hidden-widescreen"></div></div><div class="column column-right is-4-tablet is-4-desktop is-3-widescreen is-hidden-touch is-hidden-desktop-only order-3"><div class="card widget" id="toc" data-type="toc"><div class="card-content"><div class="menu"><h3 class="menu-label">目录</h3><ul class="menu-list"><li><a class="level is-mobile" href="#AWK基础应用"><span class="level-left"><span class="level-item">1</span><span class="level-item">AWK基础应用</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#一、Awk简介"><span class="level-left"><span class="level-item">1.1</span><span class="level-item">一、Awk简介</span></span></a></li><li><a class="level is-mobile" href="#二、命令格式解析"><span class="level-left"><span class="level-item">1.2</span><span class="level-item">二、命令格式解析</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#格式1"><span class="level-left"><span class="level-item">1.2.1</span><span class="level-item">格式1</span></span></a></li><li><a class="level is-mobile" href="#格式2"><span class="level-left"><span class="level-item">1.2.2</span><span class="level-item">格式2</span></span></a></li></ul></li><li><a class="level is-mobile" href="#五、Awk常用选项"><span class="level-left"><span class="level-item">1.3</span><span class="level-item">五、Awk常用选项</span></span></a></li><li><a class="level is-mobile" href="#三、AWK变量"><span class="level-left"><span class="level-item">1.4</span><span class="level-item">三、AWK变量</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#内置变量"><span class="level-left"><span class="level-item">1.4.1</span><span class="level-item">内置变量</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#RS、FS、ORS-、OFS"><span class="level-left"><span class="level-item">1.4.1.1</span><span class="level-item">RS、FS、ORS 、OFS</span></span></a></li><li><a class="level is-mobile" href="#ARGC"><span class="level-left"><span class="level-item">1.4.1.2</span><span class="level-item">ARGC</span></span></a></li><li><a class="level is-mobile" href="#NR、FNR、FILENAME、NF"><span class="level-left"><span class="level-item">1.4.1.3</span><span class="level-item">NR、FNR、FILENAME、NF</span></span></a></li></ul></li><li><a class="level is-mobile" href="#自定义变量"><span class="level-left"><span class="level-item">1.4.2</span><span class="level-item">自定义变量</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#引入"><span class="level-left"><span class="level-item">1.4.2.1</span><span class="level-item">引入</span></span></a></li><li><a class="level is-mobile" href="#方式一"><span class="level-left"><span class="level-item">1.4.2.2</span><span class="level-item">方式一</span></span></a></li><li><a class="level is-mobile" href="#方式二"><span class="level-left"><span class="level-item">1.4.2.3</span><span class="level-item">方式二</span></span></a></li><li><a class="level is-mobile" href="#举例"><span class="level-left"><span class="level-item">1.4.2.4</span><span class="level-item">举例</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#四、AWK处理动作"><span class="level-left"><span class="level-item">1.5</span><span class="level-item">四、AWK处理动作</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#动作类型"><span class="level-left"><span class="level-item">1.5.1</span><span class="level-item">动作类型</span></span></a></li><li><a class="level is-mobile" href="#类型小结"><span class="level-left"><span class="level-item">1.5.2</span><span class="level-item">类型小结</span></span></a></li><li><a class="level is-mobile" href="#举例说明"><span class="level-left"><span class="level-item">1.5.3</span><span class="level-item">举例说明</span></span></a></li></ul></li><li><a class="level is-mobile" href="#六、格式化输出"><span class="level-left"><span class="level-item">1.6</span><span class="level-item">六、格式化输出</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#格式说明"><span class="level-left"><span class="level-item">1.6.1</span><span class="level-item">格式说明</span></span></a></li><li><a class="level is-mobile" href="#修饰字符"><span class="level-left"><span class="level-item">1.6.2</span><span class="level-item">修饰字符</span></span></a></li><li><a class="level is-mobile" href="#举例使用"><span class="level-left"><span class="level-item">1.6.3</span><span class="level-item">举例使用</span></span></a></li></ul></li><li><a class="level is-mobile" href="#七、AWK处理条件"><span class="level-left"><span class="level-item">1.7</span><span class="level-item">七、AWK处理条件</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#处理条件概述"><span class="level-left"><span class="level-item">1.7.1</span><span class="level-item">处理条件概述</span></span></a></li><li><a class="level is-mobile" href="#条件表现形式"><span class="level-left"><span class="level-item">1.7.2</span><span class="level-item">条件表现形式</span></span></a></li><li><a class="level is-mobile" href="#正则表达式"><span class="level-left"><span class="level-item">1.7.3</span><span class="level-item">正则表达式</span></span></a></li><li><a class="level is-mobile" href="#运算符匹配"><span class="level-left"><span class="level-item">1.7.4</span><span class="level-item">运算符匹配</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#关系运算符"><span class="level-left"><span class="level-item">1.7.4.1</span><span class="level-item">关系运算符</span></span></a></li><li><a class="level is-mobile" href="#逻辑运算符"><span class="level-left"><span class="level-item">1.7.4.2</span><span class="level-item">逻辑运算符</span></span></a></li></ul></li><li><a class="level is-mobile" href="#变量的运算"><span class="level-left"><span class="level-item">1.7.5</span><span class="level-item">变量的运算</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#运算符号"><span class="level-left"><span class="level-item">1.7.5.1</span><span class="level-item">运算符号</span></span></a></li><li><a class="level is-mobile" href="#举例练习"><span class="level-left"><span class="level-item">1.7.5.2</span><span class="level-item">举例练习</span></span></a></li></ul></li></ul></li></ul></li><li><a class="level is-mobile" href="#AWK高级应用"><span class="level-left"><span class="level-item">2</span><span class="level-item">AWK高级应用</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#一、流程控制"><span class="level-left"><span class="level-item">2.1</span><span class="level-item">一、流程控制</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#条件语句"><span class="level-left"><span class="level-item">2.1.1</span><span class="level-item">条件语句</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#语法格式"><span class="level-left"><span class="level-item">2.1.1.1</span><span class="level-item">语法格式</span></span></a></li><li><a class="level is-mobile" href="#举例应用"><span class="level-left"><span class="level-item">2.1.1.2</span><span class="level-item">举例应用</span></span></a></li></ul></li><li><a class="level is-mobile" href="#循环语句"><span class="level-left"><span class="level-item">2.1.2</span><span class="level-item">循环语句</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#while-循环"><span class="level-left"><span class="level-item">2.1.2.1</span><span class="level-item">while 循环</span></span></a></li><li><a class="level is-mobile" href="#do-while循环"><span class="level-left"><span class="level-item">2.1.2.2</span><span class="level-item">do while循环</span></span></a></li><li><a class="level is-mobile" href="#for循环"><span class="level-left"><span class="level-item">2.1.2.3</span><span class="level-item">for循环</span></span></a></li><li><a class="level is-mobile" href="#其他控制语句"><span class="level-left"><span class="level-item">2.1.2.4</span><span class="level-item">其他控制语句</span></span></a></li></ul></li></ul></li><li><a class="level is-mobile" href="#二、Awk数组"><span class="level-left"><span class="level-item">2.2</span><span class="level-item">二、Awk数组</span></span></a><ul class="menu-list"><li><a class="level is-mobile" href="#定义数组"><span class="level-left"><span class="level-item">2.2.1</span><span class="level-item">定义数组</span></span></a></li><li><a class="level is-mobile" href="#使用数组"><span class="level-left"><span class="level-item">2.2.2</span><span class="level-item">使用数组</span></span></a></li><li><a class="level is-mobile" href="#遍历数组"><span class="level-left"><span class="level-item">2.2.3</span><span class="level-item">遍历数组</span></span></a></li><li><a class="level is-mobile" href="#举例使用-1"><span class="level-left"><span class="level-item">2.2.4</span><span class="level-item">举例使用</span></span></a></li><li><a class="level is-mobile" href="#综合案例"><span class="level-left"><span class="level-item">2.2.5</span><span class="level-item">综合案例</span></span></a></li></ul></li></ul></li></ul></div></div><style>#toc .menu-list > li > a.is-active + .menu-list { display: block; }#toc .menu-list > li > a + .menu-list { display: none; }</style><script src="/js/toc.js" defer></script></div></div></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="Hexo" height="28"></a><p class="is-size-7"><span>&copy; 2022 John Doe</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("zh-CN");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="回到顶端" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "此网站使用Cookie来改善您的体验。",
+          dismiss: "知道了！",
+          allow: "允许使用Cookie",
+          deny: "拒绝",
+          link: "了解更多",
+          policy: "Cookie政策",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.10.0/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.8.1/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="想要查找什么..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"想要查找什么...","untitled":"(无标题)","posts":"文章","pages":"页面","categories":"分类","tags":"标签"});
+        });</script></body></html>
