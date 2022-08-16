@@ -12309,3 +12309,45 @@ fieldset[disabled] article.article .article-more.is-inverted:before:before {
 .cc-window.cc-banner .cc-compliance > .cc-btn:focus {
   background-color: #02cce5;
 }
+header {
+  width: 80% !important;
+}
+header.post-header {
+  width: auto !important;
+}
+.container .main-inner {
+  width: 80%;
+}
+.content-wrap {
+  width: calc(100% - 260px);
+}
+@media screen and (min-width: 769px), print {
+  .header {
+    width: auto !important;
+  }
+}
+@media screen and (max-width: 768px) {
+  .header {
+    width: auto !important;
+  }
+}
+@media screen and (min-width: 769px), print {
+  .container .main-inner {
+    width: auto !important;
+  }
+}
+@media screen and (max-width: 768px) {
+  .container .main-inner {
+    width: auto !important;
+  }
+}
+@media screen and (min-width: 769px), print {
+  .content-wrap {
+    width: 100% !important;
+  }
+}
+@media screen and (max-width: 768px) {
+  .content-wrap {
+    width: 100% !important;
+  }
+}
